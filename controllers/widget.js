@@ -1,5 +1,6 @@
 var args = $.args;
 var childrenReady = false;
+var onClick;
 
 init($.args);
 function init(args) {
@@ -32,6 +33,8 @@ params = {
 exports.show = function(params) {
 	args.DEBUG && Ti.API.info("com.imobicloud.bottomsheet: show " + JSON.stringify( params ));
 
+	onClick = params.onClick;
+
 	if (params.actions) {
 		if (args.children) {
 			$.container.remove(args.children);
@@ -56,7 +59,7 @@ exports.show = function(params) {
 			}
 			
 			var button = $.UI.create('View', { classes: 'button', index: i });
-				button.addEventListener('click', params.onClick);
+				button.addEventListener('click', buttonClick);
 				button.add( $.UI.create('ImageView', { classes: 'button-icon', image: action.icon }) );
 				button.add( $.UI.create('Label', { classes: 'button-title', text: action.title }) );
 			wrapper.add(button);
@@ -85,6 +88,11 @@ function wrapperReady(e) {
 	children.bottom = - children.rect.height + 1;
 	
 	toggleBottomSheet(true);
+}
+
+function buttonClick(e) {
+	onClick && onClick({ index: this.index });
+	toggleBottomSheet(false);
 }
 
 function toggleBottomSheet(visible) {
